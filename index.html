@@ -8,10 +8,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="game-wrapper">
         <h1>🐉 DRAGON<br>EVOLUTION 🐉</h1>
-
         <div class="header-info">
             <div class="score-box">
                 <div>СЧЕТ</div>
@@ -23,37 +21,30 @@
                 <span id="best">0</span>
             </div>
         </div>
-
         <div class="game-container" id="game-container">
             <div class="grid-bg">
-                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
             </div>
-
-            <div class="tile-container" id="tile-container">
-            </div>
-
+            <div class="tile-container" id="tile-container"></div>
             <div class="overlay" id="game-over">
                 <h2 style="color: #ef233c; text-shadow: 3px 3px 0 #000;">GAME OVER</h2>
                 <p style="font-size: 10px; margin: 10px 0;">Собери всех драконов!</p>
                 <button onclick="restartGame()">ЗАНОВО</button>
             </div>
         </div>
-
         <div class="controls">
             ⬆️ ⬇️ ⬅️ ➡️ Используй стрелки или свайп
         </div>
-
         <div class="info-panel">
             <p>Соединяй одинаковых драконов для эволюции!</p>
         </div>
     </div>
-
     <audio id="move-sound" src="resources/move-sound.mp3" preload="auto"></audio>
     <audio id="merge-sound" src="resources/merge-sound.mp3" preload="auto"></audio>
-
 <script src="script.js"></script>
 </body>
 </html>
