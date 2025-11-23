@@ -3,14 +3,25 @@
     --game-bg: #8d99ae;
     --cell-bg: #edf2f4;
     --font-main: 'Press Start 2P', cursive;
-    --tile-size: 80px;
-    --gap: 12px;
+    --tile-size: 100px;  /* Увеличено с 80px */
+    --gap: 14px;         /* Увеличено с 12px */
     --anim-speed: 150ms;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
-    background-image: url('resources/grass-tile.png');
-    background-size: 32px;
+    background-color: #1a3a2e;
+    background-image: 
+        linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 75%),
+        linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.1) 75%),
+        url('resources/grass-tile.png'),
+        url('resources/dirt-tile.png');
+    background-size: 64px 64px, 64px 64px, 32px 32px, 48px 48px;
+    background-position: 0 0, 32px 32px, 0 0, 16px 16px;
+    background-blend-mode: multiply, multiply, normal, soft-light;
     font-family: var(--font-main);
     color: white;
     display: flex;
@@ -24,48 +35,50 @@ body {
 }
 
 h1 {
-    font-size: 20px;
+    font-size: 24px;
     color: #ef233c;
-    text-shadow: 3px 3px 0 #000;
+    text-shadow: 4px 4px 0 #000;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     line-height: 1.5;
 }
 
 .header-info {
     display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 20px;
+    margin-bottom: 20px;
 }
 
 .score-box {
     background: #2b2d42;
     border: 3px solid #fff;
-    padding: 10px;
-    min-width: 90px;
+    padding: 12px 15px;
+    min-width: 110px;
     text-align: center;
-    box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.5);
 }
 
 .score-box div:first-child {
-    font-size: 10px;
+    font-size: 11px;
     color: #8d99ae;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 }
 
-* {
-    box-sizing: border-box;
+.score-box span {
+    font-size: 18px;
+    color: #fff;
 }
 
 .game-container {
     position: relative;
     background: var(--game-bg);
     padding: var(--gap);
-    border: 4px solid #000;
-    box-shadow: 8px 8px 0 rgba(0,0,0,0.5);
-    width: calc(var(--tile-size) * 4 + var(--gap) * 3);
-    height: calc(var(--tile-size) * 4 + var(--gap) * 3);
-    border-radius: 8px;
+    border: 5px solid #000;
+    box-shadow: 10px 10px 0 rgba(0,0,0,0.5);
+    /* ПРАВИЛЬНЫЙ РАСЧЕТ: 4 тайла + 5 промежутков (2 по краям padding + 3 между тайлами) */
+    width: calc(var(--tile-size) * 4 + var(--gap) * 5);
+    height: calc(var(--tile-size) * 4 + var(--gap) * 5);
+    border-radius: 10px;
     touch-action: none;
 }
 
@@ -80,15 +93,16 @@ h1 {
     width: var(--tile-size);
     height: var(--tile-size);
     background: rgba(255,255,255,0.2);
-    border-radius: 4px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .tile-container {
     position: absolute;
     top: var(--gap);
     left: var(--gap);
-    width: 100%;
-    height: 100%;
+    width: calc(100% - var(--gap) * 2);
+    height: calc(100% - var(--gap) * 2);
     pointer-events: none;
 }
 
@@ -96,7 +110,7 @@ h1 {
     position: absolute;
     width: var(--tile-size);
     height: var(--tile-size);
-    border-radius: 4px;
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -105,19 +119,49 @@ h1 {
     font-weight: bold;
     z-index: 10;
     transition: transform var(--anim-speed) ease-in-out;
-    box-shadow: inset -4px -4px 0 rgba(0,0,0,0.2);
-    border: 2px solid rgba(0,0,0,0.1);
+    box-shadow: inset -5px -5px 0 rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.3);
+    border: 3px solid rgba(0,0,0,0.2);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
 
-.tile-text {
-    font-size: 8px;
-    margin-top: 4px;
+/* Стили для текстовых элементов на тайлах */
+.tile-value {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 
+        2px 2px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+    line-height: 1;
+    z-index: 2;
+}
+
+.tile-name {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 7px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
     text-align: center;
-    line-height: 1.2;
-    color: rgba(0,0,0,0.7);
+    line-height: 1.1;
+    max-width: 90%;
+    z-index: 2;
+    letter-spacing: 0.5px;
 }
 
 .tile-new {
@@ -130,11 +174,21 @@ h1 {
 }
 
 @keyframes pop {
-    0% { transform: scale(0); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
+    0% { 
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% { 
+        transform: scale(1.15);
+        opacity: 1;
+    }
+    100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
+/* Цвета и фоны для каждого значения */
 .val-2 { background-image: url('resources/dragon-egg.png'); background-color: #ffeebb; }
 .val-4 { background-image: url('resources/baby-dragon.png'); background-color: #ffdd99; }
 .val-8 { background-image: url('resources/young-dragon.png'); background-color: #ffcc88; }
@@ -149,8 +203,11 @@ h1 {
 
 .overlay {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(43, 45, 66, 0.9);
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(43, 45, 66, 0.95);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -159,7 +216,7 @@ h1 {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 .overlay.active {
@@ -167,26 +224,58 @@ h1 {
     pointer-events: auto;
 }
 
+.overlay h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
 button {
     background: #ef233c;
     border: 4px solid #000;
     color: #fff;
-    padding: 15px 20px;
+    padding: 15px 25px;
     font-family: var(--font-main);
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
     margin-top: 20px;
-    box-shadow: 4px 4px 0 #000;
+    box-shadow: 5px 5px 0 #000;
+    border-radius: 4px;
+    transition: all 0.1s;
+}
+
+button:hover {
+    background: #d62839;
 }
 
 button:active {
-    transform: translate(2px, 2px);
+    transform: translate(3px, 3px);
     box-shadow: 2px 2px 0 #000;
 }
 
 .controls {
-    margin-top: 20px;
-    font-size: 10px;
+    margin-top: 25px;
+    font-size: 11px;
     color: #8d99ae;
     text-align: center;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+}
+
+/* Адаптивность для маленьких экранов */
+@media (max-width: 600px) {
+    :root {
+        --tile-size: 70px;
+        --gap: 10px;
+    }
+    
+    h1 {
+        font-size: 18px;
+    }
+    
+    .tile-value {
+        font-size: 11px;
+    }
+    
+    .tile-name {
+        font-size: 6px;
+    }
 }
