@@ -3,44 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Pixel Evolution 2048</title>
+    <title>Dragon Evolution 2048</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>EVOLUTION<br>2048</h1>
+    <div class="game-wrapper">
+        <h1>🐉 DRAGON<br>EVOLUTION 🐉</h1>
 
-    <div class="header-info">
-        <div class="score-box">
-            <div>СЧЕТ</div>
-            <span id="score">0</span>
-        </div>
-        <div class="score-box">
-            <div>РЕКОРД</div>
-            <span id="best">0</span>
-        </div>
-    </div>
-
-    <div class="game-container" id="game-container">
-        <div class="grid-bg">
-            <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-            <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-            <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-            <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+        <div class="header-info">
+            <div class="score-box">
+                <div>СЧЕТ</div>
+                <span id="score">0</span>
+            </div>
+            <button class="new-game-btn" onclick="restartGame()">НОВАЯ<br>ИГРА</button>
+            <div class="score-box">
+                <div>РЕКОРД</div>
+                <span id="best">0</span>
+            </div>
         </div>
 
-        <div class="tile-container" id="tile-container">
+        <div class="game-container" id="game-container">
+            <div class="grid-bg">
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+            </div>
+
+            <div class="tile-container" id="tile-container">
+            </div>
+
+            <div class="overlay" id="game-over">
+                <h2 style="color: #ef233c; text-shadow: 3px 3px 0 #000;">GAME OVER</h2>
+                <p style="font-size: 10px; margin: 10px 0;">Собери всех драконов!</p>
+                <button onclick="restartGame()">ЗАНОВО</button>
+            </div>
         </div>
 
-        <div class="overlay" id="game-over">
-            <h2 style="color: #ef233c; text-shadow: 2px 2px 0 #000;">GAME OVER</h2>
-            <button onclick="restartGame()">ЗАНОВО</button>
+        <div class="controls">
+            ⬆️ ⬇️ ⬅️ ➡️ Используй стрелки или свайп
         </div>
-    </div>
 
-    <div class="controls">
-        Используй стрелочки или свайп
+        <div class="info-panel">
+            <p>Соединяй одинаковых драконов для эволюции!</p>
+        </div>
     </div>
 
     <audio id="move-sound" src="resources/move-sound.mp3" preload="auto"></audio>
