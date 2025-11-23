@@ -6,6 +6,7 @@ let tiles = [];
 let score = 0;
 let isMoving = false;
 let tileIdCounter = 0;
+let audioUnlocked = false;
 
 const moveSound = document.getElementById('move-sound');
 const mergeSound = document.getElementById('merge-sound');
@@ -16,6 +17,36 @@ const gameOverEl = document.getElementById('game-over');
 
 let bestScore = localStorage.getItem('catDragonBest') || 0;
 bestEl.innerText = bestScore;
+
+// Названия драконов для каждого значения
+const dragonNames = {
+    2: 'ЯЙЦО',
+    4: 'МАЛЫШ',
+    8: 'ЮНЫЙ',
+    16: 'ДРАКОН',
+    32: 'ОГОНЬ',
+    64: 'ЛЁД',
+    128: 'МОЛНИЯ',
+    256: 'ТЕНЬ',
+    512: 'ЗОЛОТОЙ',
+    1024: 'ДРЕВНИЙ',
+    2048: 'МЕГА'
+};
+
+// Инициализация звука при первом взаимодействии
+function unlockAudio() {
+    if (!audioUnlocked) {
+        moveSound.play().then(() => {
+            moveSound.pause();
+            moveSound.currentTime = 0;
+        }).catch(() => {});
+        mergeSound.play().then(() => {
+            mergeSound.pause();
+            mergeSound.currentTime = 0;
+        }).catch(() => {});
+        audioUnlocked = true;
+    }
+}
 
 function restartGame() {
     container.innerHTML = '';
@@ -31,7 +62,24 @@ function restartGame() {
 function createTileElement(x, y, value) {
     const el = document.createElement('div');
     el.classList.add('tile', `val-${value}`);
-    setTilePosition(el, x, y);
+    
+    // Добавляем текстовое содержимое
+    const valueSpan = document.createElement('span');
+    valueSpan.className = 'tile-value';
+    valueSpan.textContent = value;
+    el.appendChild(valueSpan);
+    
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'tile-name';
+    nameSpan.textContent = dragonNames[value] || '';
+    el.appendChild(nameSpan);
+    
+    // КРИТИЧНО: устанавливаем позицию ДО добавления в DOM
+    // Это предотвращает появление в (0,0) перед анимацией
+    const xPos = x * (CELL_SIZE + GAP);
+    const yPos = y * (CELL_SIZE + GAP);
+    el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+    
     return el;
 }
 
@@ -39,6 +87,14 @@ function setTilePosition(el, x, y) {
     const xPos = x * (CELL_SIZE + GAP);
     const yPos = y * (CELL_SIZE + GAP);
     el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+}
+
+// Обновляем текст на тайле при изменении значения
+function updateTileContent(el, value) {
+    const valueSpan = el.querySelector('.tile-value');
+    const nameSpan = el.querySelector('.tile-name');
+    if (valueSpan) valueSpan.textContent = value;
+    if (nameSpan) nameSpan.textContent = dragonNames[value] || '';
 }
 
 function spawnTile() {
@@ -56,8 +112,12 @@ function spawnTile() {
         const value = Math.random() > 0.9 ? 4 : 2;
 
         const el = createTileElement(cell.x, cell.y, value);
-        el.classList.add('tile-new');
         container.appendChild(el);
+        
+        // Добавляем класс анимации после микрозадержки для плавного появления
+        requestAnimationFrame(() => {
+            el.classList.add('tile-new');
+        });
 
         tiles.push({
             id: tileIdCounter++,
@@ -82,6 +142,7 @@ async function move(direction) {
     const vector = vectors[direction];
     if (!vector) return;
 
+    unlockAudio();
     isMoving = true;
     let hasMoved = false;
 
@@ -202,8 +263,10 @@ function isGameOver() {
 }
 
 function playSound(sound) {
-    sound.currentTime = 0;
-    sound.play();
+    if (audioUnlocked) {
+        sound.currentTime = 0;
+        sound.play().catch(() => {}); // Игнорируем ошибки autoplay
+    }
 }
 
 document.addEventListener('keydown', e => {
@@ -235,5 +298,9 @@ document.addEventListener('touchend', e => {
     startX = null; startY = null;
     e.preventDefault();
 }, {passive: false});
+
+// Разблокировка аудио при первом клике
+document.addEventListener('click', unlockAudio, { once: true });
+document.addEventListener('touchstart', unlockAudio, { once: true });
 
 restartGame();
