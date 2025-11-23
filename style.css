@@ -3,13 +3,9 @@
     --game-bg: #8d99ae;
     --cell-bg: #edf2f4;
     --font-main: 'Press Start 2P', cursive;
-    --tile-size: 100px;  /* Увеличено с 80px */
-    --gap: 14px;         /* Увеличено с 12px */
+    --tile-size: 100px;
+    --gap: 14px;
     --anim-speed: 150ms;
-}
-
-* {
-    box-sizing: border-box;
 }
 
 body {
@@ -39,12 +35,12 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 600px;
+    max-width: 700px;
     width: 100%;
 }
 
 h1 {
-    font-size: 24px;
+    font-size: 26px;
     color: #ef233c;
     text-shadow: 4px 4px 0 #000;
     text-align: center;
@@ -113,9 +109,8 @@ h1 {
     padding: var(--gap);
     border: 5px solid #000;
     box-shadow: 10px 10px 0 rgba(0,0,0,0.5);
-    /* ПРАВИЛЬНЫЙ РАСЧЕТ: 4 тайла + 5 промежутков (2 по краям padding + 3 между тайлами) */
-    width: calc(var(--tile-size) * 4 + var(--gap) * 5);
-    height: calc(var(--tile-size) * 4 + var(--gap) * 5);
+    width: calc(var(--tile-size) * 5 + var(--gap) * 6);
+    height: calc(var(--tile-size) * 5 + var(--gap) * 6);
     border-radius: 10px;
     touch-action: none;
     margin: 0 auto;
@@ -123,8 +118,8 @@ h1 {
 
 .grid-bg {
     display: grid;
-    grid-template-columns: repeat(4, var(--tile-size));
-    grid-template-rows: repeat(4, var(--tile-size));
+    grid-template-columns: repeat(5, var(--tile-size));
+    grid-template-rows: repeat(5, var(--tile-size));
     gap: var(--gap);
 }
 
@@ -165,7 +160,6 @@ h1 {
     background-repeat: no-repeat;
 }
 
-/* Стили для текстовых элементов на тайлах */
 .tile-value {
     position: absolute;
     top: 4px;
@@ -227,7 +221,6 @@ h1 {
     }
 }
 
-/* Цвета и фоны для каждого значения */
 .val-2 { background-image: url('resources/dragon-egg.png'); background-color: #ffeebb; }
 .val-4 { background-image: url('resources/baby-dragon.png'); background-color: #ffdd99; }
 .val-8 { background-image: url('resources/young-dragon.png'); background-color: #ffcc88; }
@@ -239,6 +232,7 @@ h1 {
 .val-512 { background-image: url('resources/golden-dragon.png'); background-color: #33aa33; }
 .val-1024 { background-image: url('resources/ancient-dragon.png'); background-color: #cc3333; }
 .val-2048 { background-image: url('resources/mega-dragon.png'); background-color: #ffdf00; }
+.val-4096 { background-image: url('resources/mega-dragon.png'); background-color: #bb33cc; }
 
 .overlay {
     position: absolute;
@@ -323,72 +317,19 @@ button:active {
     line-height: 1.5;
 }
 
-/* Адаптивность для маленьких экранов */
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     :root {
-        --tile-size: 70px;
-        --gap: 10px;
+        --tile-size: 65px;
+        --gap: 9px;
     }
-    
-    body {
-        padding: 10px;
+    .game-container {
+        min-width: 280px;
     }
-    
-    h1 {
-        font-size: 18px;
-        margin-bottom: 15px;
+    .grid-bg {
+        min-width: 260px;
     }
-    
-    .header-info {
-        gap: 10px;
-        margin-bottom: 15px;
-    }
-    
-    .score-box {
-        min-width: 85px;
-        padding: 8px 10px;
-    }
-    
-    .score-box div:first-child {
-        font-size: 8px;
-    }
-    
-    .score-box span {
-        font-size: 16px;
-    }
-    
-    .new-game-btn {
-        font-size: 8px;
-        padding: 6px 10px;
-        min-width: 70px;
-    }
-    
-    .tile-value {
-        font-size: 11px;
-        top: 3px;
-        right: 4px;
-    }
-    
-    .tile-name {
-        font-size: 6px;
-        bottom: 3px;
-    }
-    
-    .controls {
-        font-size: 9px;
-        margin-top: 15px;
-    }
-    
-    .info-panel {
-        padding: 10px 15px;
-        margin-top: 12px;
-    }
-    
-    .info-panel p {
-        font-size: 8px;
-    }
-    
-    .overlay h2 {
-        font-size: 22px;
+    .tile {
+        min-width: 65px;
+        min-height: 65px;
     }
 }
