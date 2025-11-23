@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Quest 2048 - Legend of Zelda Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: #2d4a2d;
+            color: #f8f8f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Тайловый фон в стиле Zelda */
+        .game-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url('resources/grass-tile.png'),
+                url('resources/dirt-tile.png');
+            background-size: 32px 32px, 64px 64px;
+            background-repeat: repeat;
+            z-index: -2;
+        }
+
+        /* Декоративные деревья по краям */
+        .forest-left, .forest-right {
+            position: fixed;
+            top: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(90deg, #1a3a1a 0%, transparent 100%);
+            z-index: -1;
+        }
+
+        .forest-left {
+            left: 0;
+        }
+
+        .forest-right {
+            right: 0;
+            background: linear-gradient(90deg, transparent 0%, #1a3a1a 100%);
+        }
+
+        /* Главный контейнер игры */
+        .game-wrapper {
+            background: linear-gradient(135deg, #3d5a3d 0%, #4d6a4d 100%);
+            border: 4px solid #8b7355;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 
+                0 0 20px rgba(0, 0, 0, 0.5),
+                inset 0 0 10px rgba(255, 255, 255, 0.1);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+        }
+
+        /* Заголовок в стиле Zelda */
+        .game-title {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .title-main {
+            font-size: 28px;
+            color: #ffd700;
+            text-shadow: 
+                2px 2px 0 #8b7355,
+                4px 4px 0 #654321;
+            margin-bottom: 10px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        .title-sub {
+            font-size: 12px;
+            color: #c0c0c0;
+            opacity: 0.8;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 2px 2px 0 #8b7355, 4px 4px 0 #654321, 0 0 5px #ffd700; }
+            100% { text-shadow: 2px 2px 0 #8b7355, 4px 4px 0 #654321, 0 0 15px #ffd700, 0 0 25px #ffd700; }
+        }
+
+        /* Панель статистики */
+        .stats-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #2d4a2d 0%, #3d5a3d 100%);
+            border: 2px solid #8b7355;
+            border-radius: 8px;
+            padding: 12px;
+            flex: 1;
+            text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #c0c0c0;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        /* Игровое поле */
+        .game-board {
+            background: linear-gradient(135deg, #1a3a1a 0%, #2d4a2d 100%);
+            border: 3px solid #8b7355;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 12px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .grid-cell {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2d4a2d 0%, #3d5a3d 100%);
+            border: 2px solid #8b7355;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Игровые плитки */
+        .tile {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #f8f8f8;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            transition: all 0.2s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .tile-value {
+            font-size: 14px;
+            margin-bottom: 2px;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .tile-name {
+            font-size: 8px;
+            text-align: center;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+
+        /* Цвета плиток по уровням */
+        .tile-2 { background: linear-gradient(135deg, #4a6741, #5a7751); }
+        .tile-4 { background: linear-gradient(135deg, #5a7751, #6a8761); }
+        .tile-8 { background: linear-gradient(135deg, #6a8761, #7a9771); }
+        .tile-16 { background: linear-gradient(135deg, #7a9771, #8aa781); }
+        .tile-32 { background: linear-gradient(135deg, #8aa781, #9ab791); }
+        .tile-64 { background: linear-gradient(135deg, #9ab791, #aac7a1); }
+        .tile-128 { background: linear-gradient(135deg, #aac7a1, #bad7b1); }
+        .tile-256 { background: linear-gradient(135deg, #bad7b1, #cae7c1); }
+        .tile-512 { background: linear-gradient(135deg, #cae7c1, #daf7d1); }
+        .tile-1024 { background: linear-gradient(135deg, #daf7d1, #eaf7e1); }
+        .tile-2048 { 
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #2d4a2d;
+            animation: legendaryPulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes legendaryPulse {
+            0% { 
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 0 10px #ffd700;
+                transform: scale(1);
+            }
+            100% { 
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 0 20px #ffd700, 0 0 30px #ffd700;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Анимации */
+        .tile-new {
+            animation: tileAppear 0.4s ease-out;
+        }
+
+        @keyframes tileAppear {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(-90deg); opacity: 0.7; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .tile-merged {
+            animation: tileMerge 0.6s ease-out;
+        }
+
+        @keyframes tileMerge {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.3) rotate(5deg); }
+            50% { transform: scale(1.2) rotate(-5deg); }
+            75% { transform: scale(1.1) rotate(2deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        /* Панель управления */
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .restart-btn, .new-game-btn {
+            background: linear-gradient(135deg, #8b7355 0%, #a58565 100%);
+            color: #f8f8f8;
+            border: 2px solid #654321;
+            padding: 10px 16px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .restart-btn:hover, .new-game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #a58565 0%, #b59575 100%);
+        }
+
+        /* Инструкция */
+        .instructions {
+            text-align: center;
+            font-size: 9px;
+            color: #c0c0c0;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        /* Экраны меню */
+        .menu-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(45, 74, 45, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .menu-screen.hidden {
+            display: none;
+        }
+
+        .menu-title {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 0 #8b7355;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #8b7355 0%, #a58565 100%);
+            color: #f8f8f8;
+            border: 2px solid #654321;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #a58565 0%, #b59575 100%);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .game-wrapper {
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            .grid-cell, .tile {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .title-main {
+                font-size: 20px;
+            }
+            
+            .stats-panel {
+                font-size: 9px;
+            }
+            
+            .tile-value {
+                font-size: 12px;
+            }
+            
+            .tile-name {
+                font-size: 7px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Тайловый фон -->
+    <div class="game-background"></div>
+    
+    <!-- Декоративные леса -->
+    <div class="forest-left"></div>
+    <div class="forest-right"></div>
+
+    <!-- Главный контейнер -->
+    <div class="game-wrapper">
+        <!-- Заголовок игры -->
+        <div class="game-title">
+            <div class="title-main">DRAGON QUEST</div>
+            <div class="title-sub">Приключение в мире драконов</div>
+        </div>
+
+        <!-- Панель статистики -->
+        <div class="stats-panel">
+            <div class="stat-box">
+                <div class="stat-label">СЧЕТ</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">РЕКОРД</div>
+                <div class="stat-value" id="best-score">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">ДРАКОНЫ</div>
+                <div class="stat-value" id="dragons-found">0/11</div>
+            </div>
+        </div>
+
+        <!-- Панель управления -->
+        <div class="control-panel">
+            <button class="restart-btn" onclick="game.restart()">НОВАЯ ИГРА</button>
+            <button class="new-game-btn" onclick="game.showMenu()">МЕНЮ</button>
+        </div>
+
+        <!-- Игровое поле -->
+        <div class="game-board">
+            <div class="game-grid" id="game-grid"></div>
+        </div>
+
+        <!-- Инструкция -->
+        <div class="instructions">
+            Используйте стрелки или WASD для движения<br>
+            Объединяйте одинаковых драконов для создания новых!<br>
+            Соберите легендарного Мегадракона!
+        </div>
+
+        <!-- Экран главного меню -->
+        <div class="menu-screen" id="main-menu">
+            <div class="menu-title">DRAGON QUEST 2048</div>
+            <button class="menu-btn" onclick="game.startNewGame()">НАЧАТЬ ИГРУ</button>
+            <button class="menu-btn" onclick="game.showInstructions()">ИНСТРУКЦИЯ</button>
+            <button class="menu-btn" onclick="game.showAbout()">ОБ ИГРЕ</button>
+        </div>
+
+        <!-- Экран инструкции -->
+        <div class="menu-screen hidden" id="instructions-menu">
+            <div class="menu-title">КАК ИГРАТЬ</div>
+            <div style="font-size: 10px; line-height: 1.6; margin-bottom: 20px; text-align: left;">
+                • Используйте стрелки или WASD для движения плиток<br><br>
+                • Когда две плитки с одинаковыми драконами соприкасаются, они объединяются!<br><br>
+                • Создавайте новых драконов, начиная с яйца<br><br>
+                • Цель - собрать легендарного Мегадракона (2048)<br><br>
+                • Игра заканчивается, когда нет возможных ходов
+            </div>
+            <button class="menu-btn" onclick="game.showMainMenu()">НАЗАД</button>
+        </div>
+
+        <!-- Экран об игре -->
+        <div class="menu-screen hidden" id="about-menu">
+            <div class="menu-title">ОБ ИГРЕ</div>
+            <div style="font-size: 10px; line-height: 1.6; margin-bottom: 20px;">
+                Dragon Quest 2048 - это пиксельное приключение<br>
+                в мире драконов в стиле классических RPG.<br><br>
+                Соберите всех 11 драконов и станьте<br>
+                легендарным драконологом!<br><br>
+                Управление: стрелки или WASD
+            </div>
+            <button class="menu-btn" onclick="game.showMainMenu()">НАЗАД</button>
+        </div>
+
+        <!-- Экран победы -->
+        <div class="menu-screen hidden" id="victory-menu">
+            <div class="menu-title">ПОБЕДА!</div>
+            <div style="font-size: 12px; color: #ffd700; margin-bottom: 20px;">
+                Поздравляем! Вы собрали МЕГАДРАКОНА!<br>
+                Вы стали легендарным драконологом!
+            </div>
+            <div style="font-size: 10px; margin-bottom: 20px;">
+                Ваш финальный счет: <span id="final-score" style="color: #ffd700;">0</span><br>
+                Драконов найдено: <span id="final-dragons" style="color: #ffd700;">0/11</span>
+            </div>
+            <button class="menu-btn" onclick="game.restart()">ИГРАТЬ СНОВА</button>
+            <button class="menu-btn" onclick="game.showMainMenu()">ГЛАВНОЕ МЕНЮ</button>
+        </div>
+
+        <!-- Экран поражения -->
+        <div class="menu-screen hidden" id="game-over-menu">
+            <div class="menu-title">ИГРА ОКОНЧЕНА</div>
+            <div style="font-size: 12px; color: #ff6b6b; margin-bottom: 20px;">
+                Больше нет доступных ходов!
+            </div>
+            <div style="font-size: 10px; margin-bottom: 20px;">
+                Ваш финальный счет: <span id="final-score-over" style="color: #ffd700;">0</span><br>
+                Драконов найдено: <span id="final-dragons-over" style="color: #ffd700;">0/11</span>
+            </div>
+            <button class="menu-btn" onclick="game.restart()">ИГРАТЬ СНОВА</button>
+            <button class="menu-btn" onclick="game.showMainMenu()">ГЛАВНОЕ МЕНЮ</button>
+        </div>
+    </div>
+
+    <script src="dragon-quest-2048.js"></script>
+</body>
+</html>
